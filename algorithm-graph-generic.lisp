@@ -3,6 +3,9 @@
 (in-package #:algorithm)
 ;;;;(declaim (optimize (debug 3)))
 
+(defgeneric to-string (obj)
+   (:documentation "Прелбразование объекта в строку"))
+
 (defgeneric add-vertex (node-graph) (:documentation "lksjdlfkj"))
 
 (defgeneric insert (part container) (:documentation "Выражает зависимость добавления части в контейнер"))

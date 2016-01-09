@@ -3,56 +3,189 @@
 (in-package #:algorithm)
 ;;;;(declaim (optimize (debug 3)))
 
-(defmethod initialize-instance :around ((x valve-01) &key vt-type  (time-open 20) (time-close 20))
-  (call-next-method x :vt-type vt-type :vt-states '("+" "-")
-		    :vt-switch-time (list (list "-" "+" time-open) (list "+" "-" time-close) )))
+;;;;;;;;;; initialize-instance ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defmethod initialize-instance :around ((x ntype) &key ntype-name ntype-states ntype-switch-time)
+  (call-next-method x
+		    :ntype-name ntype-name
+		    :ntype-states ntype-states 
+		    :ntype-switch-time ntype-switch-time))
+
+(defmethod initialize-instance :around ((x ntype2) &key ntype-name  (time-open 20) (time-close 20))
+  (call-next-method x :ntype-name ntype-name :ntype-states '("+" "-")
+		    :ntype-switch-time (list (list "-" "+" time-open) (list "+" "-" time-close) )))
+
+(defmethod initialize-instance :around ((x vertex) &key vertex-name vertex-node vertex-state)
+  (call-next-method x
+		    :vertex-name vertex-name
+		    :vertex-node vertex-node 
+		    :vertex-number (vertex-counter x)
+		    :vertex-state vertex-state)
+  (incf (vertex-counter x)))
 
 
-;;;;;;;;;; print-object
+;;;;;;;;;; print-object ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defmethod print-object ((x node-graph) s) (format s "#node-graph(~S ~S)" (name x) (vertexes x)))
+(defmethod print-object :after ((x ntype) s)
+  (format s "~%(~S ~S ~S)" (ntype-name x) (ntype-states x) (ntype-switch-time x)))
 
-(defmethod print-object ((x algorithm-graph) s) (format s "#algorithm-graph(~S ~S)" (nodes x) (ribs x)))
+(defmethod print-object :after ((x node) s)
+  (format s "~%(~S ~S)"
+	  (node-name x)
+	  (cond
+	    ((node-type x) (ntype-name(node-type x)))
+	    ((node-type x)))))
 
-(defmethod print-object ((x vertex-type) s)
-  (format s "#vertex-type(~S ~S ~S)~%" (vt-type x) (vt-states x) (vt-switch-time x)))
+(defmethod print-object :after ((x graph) s) (format s "(~S ~S)" (graph-vertexes x) (graph-ribs x)))
 
-(defmethod print-object ((x vertex) s)
-  (format s "#vertex(~S ~S ~S ~S)" (v-name x) (v-num x) (v-state x) (vt-type(v-type x))))
+(defmethod print-object :after ((x vertex) s)
+	   (format s "(~S ~S ~S)~%"
+		   (node-name (vertex-node x))
+		   (vertex-number x)
+		   (vertex-state x)))
 
-;;;;;;;;;; copy-class-instance
+(defmethod print-object :after ((x rib) s)
+  (format s "((~S ~S ~S)->(~S ~S ~S))"
+	  (node-name(vertex-node (rib-start-vertex x)))
+	  (vertex-number(rib-start-vertex x))
+  	  (vertex-state (rib-start-vertex x))
+	  (node-name(vertex-node(rib-end-vertex x)))
+	  (vertex-number(rib-end-vertex x))
+  	  (vertex-state (rib-end-vertex x))))
 
-(defmethod copy-class-instance ((x node-graph)) (make-instance 'node-graph :name (name x) :vertexes (vertexes x)))
+(defmethod print-object :after ((x graph) s)
+  (format s "(VC=~S RC=~S~%(" (hash-table-count (graph-vertexes x)) (hash-table-count (graph-ribs x)))
+  (maphash #'(lambda (k v) (format s "~S " v) )(graph-vertexes x))
+  (format s ")~%(" )
+  (maphash #'(lambda (k v) (format s "~S~%" v) )(graph-ribs x))
+  (format s "))"))
 
-(defmethod copy-class-instance ((x vertex-type)) (make-instance 'vertex-type :vt-type (vt-type x) :vt-switch-time (vt-switch-time x) :vt-states (vt-states x)))
+;;;;;;;;;; graph-add-vertex ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;;;;;;;;;; switch-time
+(defmethod graph-add-vertex ((g graph ) (v vertex)) (setf (gethash v (graph-vertexes g)) v) v)
 
-(defmethod switch-time ((obj vertex-type) from-state to-state)
-  0.0
+;;;;;;;;;; graph-add-rib ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defmethod graph-add-rib ((g graph ) (r rib))
+  (setf (gethash r (graph-ribs g)) r)
+  (setf (gethash (rib-start-vertex r) (graph-vertexes g)) (rib-start-vertex r))
+  (setf (gethash (rib-end-vertex r) (graph-vertexes g)) (rib-end-vertex r))
+  r)
+
+;;;;;;;;;; graph-add-node ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defmethod graph-add-node ((g graph ) node-name node-state-list)
+  (let* (
+	 (nd (make-instance 'node :node-name node-name))
+	 (vl (mapcar #'(lambda (v)
+			 (graph-add-vertex g (make-instance 'vertex :vertex-node nd :vertex-state v)))
+		     node-state-list)))
+    (mapc
+     #'(lambda (v1 v2 )
+	 (graph-add-rib g (make-instance 'rib :rib-start-vertex v1 :rib-end-vertex v2)))
+     (reverse(cdr(reverse vl))) (cdr vl))))
+
+;;;;;;;;;; graph-add-node-list ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defmethod graph-add-node-list((g graph ) node-list)
+  (mapc
+   #'(lambda (el)
+       (graph-add-node g (car el) (cdr el))
+       )
+   node-list)
   )
 
-(defmethod switch-time ((obj valve-01) from-state to-state)
-  (let ((rez 0.0))
-    (mapc
-     #'(lambda (el)
-	 (cond
-	   ((and (string= from-state (first el)) (string= to-state (second el)))
-	    (setf rez (third el)))))
-     (vt-switch-time obj))
-    rez))
+;;;;;;;;;; graph-clear ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;;;;;;;;;; add-vertex
+(defmethod graph-clear ((g graph))
+  (clrhash (graph-vertexes g))
+  (clrhash (graph-ribs g))
+  g)
 
-;(defmethod add-vertex ((x node-graph)) (setf (vertexes x) (cons (length (vertexes x)) (vertexes x))))
+;;;;;;;;;; *find* ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defmethod graph-find-inlet-vertexes ((g graph))
+  (let ((rez-tbl(hash-table-copy(graph-vertexes g))))
+    (maphash
+     #'(lambda (k v)
+	 (remhash (rib-end-vertex k) rez-tbl))
+     (graph-ribs g))
+    rez-tbl
+    ))
+
+(defmethod graph-find-outlet-vertexes ((g graph))
+  (let ((rez-tbl(hash-table-copy(graph-vertexes g))))
+    (maphash
+     #'(lambda (k v)
+	 (remhash (rib-start-vertex k) rez-tbl))
+     (graph-ribs g))
+    rez-tbl
+    ))
+
+(defmethod graph-find-vertex-by-name((g graph) str)
+  (let ((ver nil))
+    (maphash #'(lambda (k v)
+	       (if (string= (to-string k) str)
+		   (setf ver k))
+	       )
+	     (graph-vertexes g))
+    ver))
+
+(defmethod graph-find-rib-by-name((g graph) str)
+  (let ((rb nil))
+    (maphash #'(lambda (k v)
+	       (if (string= (to-string k) str)
+		   (setf rb k))
+	       )
+	     (graph-ribs g))
+    rb))
+
+
+(defmethod graph-find-outlet-ribs((g graph) (v vertex))
+  (let ((rez-tbl(hash-table-copy(graph-ribs g))))
+    (maphash
+     #'(lambda (key val)
+	 (if (not(eq (rib-start-vertex key) v))
+	     (remhash  key rez-tbl)))
+     (graph-ribs g))
+    rez-tbl))
+
+;;;;;;;;;; switch-time ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defmethod to-string (val) (format nil "~A" val))
+
+(defmethod to-string ((x vertex))
+  (format nil "~A:~A" (node-name (vertex-node x)) (vertex-number x)))
+
+(defmethod to-string ((x rib))
+  (format nil "~A->~A" (to-string(rib-start-vertex x)) (to-string(rib-end-vertex x))))
+
+;;;;;;;;;; graph-renumerate-vertex ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defmethod graph-renumerate-vertex((g graph) (v vertex))
+  (setf (vertex-number v) 0)
+  (do )
+  (graph-find-outlet-ribs g v)
+  )
+
+;;;;;;;;;; switch-time ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;;;;(defmethod switch-time ((obj vertex-type) from-state to-state)  0.0  )
+
+;;;;(defmethod switch-time ((obj valve-01) from-state to-state)
+;;;;  (let ((rez 0.0))
+;;;;    (mapc
+;;;;     #'(lambda (el)
+;;;;	 (cond
+;;;;	   ((and (string= from-state (first el)) (string= to-state (second el)))
+;;;;	    (setf rez (third el)))))
+;;;;     (vt-switch-time obj))
+;;;;    rez))
 
 ;;;;;;;;;; insert
 
-;(defmethod insert((y node-graph) (x algorithm-graph)) (setf (nodes x) (cons (copy-object y) (nodes x) )))
+;;;;;;;;;; copy-class-instance
 
-;(defmethod insert((y vertex-graph) (x node-graph)) (setf (nodes x) (cons (copy-object y) (nodes x) )))
+;;;;(defmethod copy-class-instance ((x node-graph)) (make-instance 'node-graph :name (name x) :vertexes (vertexes x)))
 
-
-;(defmethod add-node((x algorithm-graph) (y node-graph)) (if (and (not (member node (nodes x) :test #'equal))) (progn (setf (nodes x) (cons node (nodes x)))  node)  nil))
-
-;(defmethod add-vertex((x algorithm-graph) node) (if (and (stringp node) (member node (nodes x) :test #'equal)) (progn (setf (vertexes x) (cons (list node (length (vertexes x))) (vertexes x))) node)  nil))
+;;;;(defmethod copy-class-instance ((x vertex-type)) (make-instance 'vertex-type :vt-type (vt-type x) :vt-switch-time (vt-switch-time x) :vt-states (vt-states x)))

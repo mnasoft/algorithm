@@ -1,5 +1,7 @@
 ;;;; package.lisp
 
 (defpackage #:algorithm
-  (:use #:cl))
+  (:use #:cl #:mnas-hash-table))
+
+
 

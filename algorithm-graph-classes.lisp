@@ -3,71 +3,95 @@
 (in-package #:algorithm)
 ;;;;(declaim (optimize (debug 3)))
 
-(defclass node-graph ()
-  ((name :accessor name
-	 :initarg :name
+(defclass ntype()
+  ((ntype-name :accessor ntype-name
+	    :initarg :ntype-name
+	    :initform ""
+	    :allocation :instance
+	    :documentation "Имя")
+   (ntype-states :accessor ntype-states
+	      :initarg :ntype-states
+	      :initform nil
+	      :allocation :instance
+	      :documentation "Список возможных состояний объекта")
+   (ntype-switch-time :accessor ntype-switch-time
+		   :initarg :ntype-switch-time
+		   :initform nil
+		   :allocation :instance
+		   :documentation "Список затрат времени на переход из одного состояния в другое"))
+  (:documentation "Определяет тип объекта, присутствующего в графе"))
+
+(defclass ntype2(ntype) ()
+  (:documentation "Элемент двухпозиционный с  положениями \"+\" (открыто; включено) \"-\" (закрыто; выключено) "))
+
+(defclass node ()
+  ((node-name :accessor node-name
+	 :initarg :node-name
 	 :initform ""
-	 :documentation "Имя узла графа")
-   (vertexes :accessor vertexes
-	 :initarg :vertexes
+	 :documentation "Имя")
+   (node-type :accessor node-type
+	 :initarg :node-type
 	 :initform nil
-	 :documentation "Вершины графа, связанные с данным узлом графа")))
-
-(defclass algorithm-graph ()
-  ((nodes :accessor nodes
-	     :initarg :nodes
-	     :initform nil
-	     :documentation "Список узлов графа")
-   (ribs :accessor ribs
-         :initarg :ribs
-	 :initform nil
-	 :documentation "Список ребер графа"))
-  (:documentation "Представляет граф, выражающий алгоритм изменения состояния агрегатов"))
-
+	 :documentation "Ссылка на тип ntype или его потомков"))
+  (:documentation "Объект, присутствующий в графе состояний.
+Состояния объекта задаются вершинами."))
 
 
 (defclass vertex ()
-  ((v-name :accessor v-name
-	 :initarg :v-name
-	 :initform ""
-	 :allocation :instance
-	 :documentation "Имя вершины")
-   (v-num :accessor v-num
-	   :initarg :v-num
-	   :initform 0
-	   :allocation :instance
-	   :documentation "Номер вершины")
-   (v-type :accessor v-type
-	 :initarg :v-type
-	 :initform nil
-	 :allocation :instance
-	 :documentation "Ссылка на тип вершины")
-   (v-state :accessor v-state
-	 :initarg :v-state
-	 :initform nil
-	 :allocation :instance
-	 :documentation "Ссылка на состояние вершины")
+  ((vertex-node :accessor vertex-node
+		:initarg :vertex-node
+		:initform nil
+		:allocation :instance
+		:documentation "Имя вершины")
+   (vertex-number :accessor vertex-number
+		  :initarg :vertex-number
+;;;;		  :initform 0
+		  :allocation :instance
+		  :documentation "Номер вершины")
+   (vertex-state :accessor vertex-state
+		 :initarg :vertex-state
+		 :initform nil
+		 :allocation :instance
+		 :documentation "Ссылка на состояние вершины")
+   (vertex-counter :accessor vertex-counter
+;;;;		   :initarg :vertex-counter
+		   :initform 0
+		   :allocation :class
+		   :documentation "Количество, созданных вершин")
    ))
 
-(defclass vertex-type()
-  ((vt-type :accessor vt-type
-	    :initarg :vt-type
-	    :initform ""
-	    :allocation :instance
-	    :documentation "Тип вершины")
-   (vt-states :accessor vt-states
-	      :initarg :vt-states
-	      :initform nil
-	      :allocation :instance
-	      :documentation "Перечень возможных состояний")
-   (vt-switch-time :accessor vt-switch-time
-		   :initarg :vt-switch-time
+(defclass rib ()
+  ((rib-start-vertex :accessor rib-start-vertex
+		     :initarg :rib-start-vertex
+		     :initform nil
+		     :allocation :instance
+		     :documentation "Начальная вершина ребра")
+   (rib-end-vertex :accessor rib-end-vertex
+		   :initarg :rib-end-vertex
 		   :initform nil
 		   :allocation :instance
-		   :documentation "Перечень затрат времени на переход из одного состояния в другое")))
+		   :documentation "Конечная  вершина ребра"))
+  (:documentation "Ребро графа"))
 
-(defclass valve-01(vertex-type) ()
-  (:documentation "Элемент двухпозиционный с  положениями \"+\" (открыто; включено) \"-\" (закрыто; выключено) "))
+
+(defclass graph ()
+  ((graph-vertexes :accessor graph-vertexes
+;;;;		   :initarg :graph-vertexes
+		   :initform (make-hash-table)
+		   :documentation "Хешированная таблица вершин графа")
+   (graph-ribs :accessor graph-ribs
+;;;;         :initarg :graph-ribs
+	       :initform (make-hash-table)
+	       :documentation "Хешированная таблица ребер графа"))
+  (:documentation "Представляет граф, выражающий алгоритм изменения состояния агрегатов во времени"))
+
+
+
+
+
+
+
+
 
 
 

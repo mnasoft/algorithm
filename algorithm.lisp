@@ -93,6 +93,5 @@
   (sb-ext:run-program
    viewer
    (list
-    (concatenate 'string fname "." out-type)))
-  )
+    (concatenate 'string fname "." out-type))))
 
