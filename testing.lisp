@@ -26,7 +26,14 @@
   (graph-add-node-list *g* *dt-gt-hhd*)
   (format t "~S" *g*))
 
-;;;;(graph-clear *g*)
+(maphash
+ #'(lambda(key val)
+     (graph-reorder-vertex *g* key 0)     
+     )
+ (graph-find-inlet-vertexes *g*))
+
+(mapcar #'(lambda (el) (format t "~A~%" el))
+	*dt-gt-hhd-ribs*)
 
 (progn (maphash #'(lambda (k v) (format t "~S " (to-string k))) (graph-find-inlet-vertexes *g*))
        (format t "~%")
@@ -38,3 +45,39 @@
 	 (algorithm::graph-find-outlet-ribs *g*(graph-find-vertex-by-name *g* "PH06:274")))
 
 (eq (graph-find-vertex-by-name *g* "PH06:274") (graph-find-vertex-by-name *g* "PH06:274"))
+
+
+
+
+
+(progn
+  (defparameter *g-node-list*
+    '(("A" "0" "1" "2" "3" "4")
+      ("B" "1" "3")
+      ("C" "2" "5")))
+  (defparameter *rib-connect*
+    '(
+;;;;      ("A:0" "A:1") ("A:1" "A:2") ("A:2" "A:3") ("A:3" "A:4")
+      ("A:0" "B:1") ("A:2" "B:3")
+;;;;      ("B:1" "B:3")
+      ("A:4" "C:5")
+      ("B:1" "C:2")
+;;;;      ("C:2" "C:5")
+      ))
+  (defparameter *g* (make-instance 'graph ))
+  (graph-add-node-list *g* *g-node-list*)
+  (mapc #'(lambda (r)
+	    (graph-add-rib
+	     *g*
+	     (make-instance
+	      'rib
+	      :rib-start-vertex (graph-find-vertex-by-name *g* (first r))
+	      :rib-end-vertex (graph-find-vertex-by-name *g* (second r)))))
+	*rib-connect*))
+
+;;;;(graph-clear *g*)
+
+
+(graph-reorder-vertex *g* (graph-find-vertex-by-name *g* "A:0") 10 )
+
+(format t "~S" *g*)

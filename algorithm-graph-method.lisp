@@ -1,6 +1,7 @@
 ;;;; algorithm-graph-method.lisp
 
 (in-package #:algorithm)
+
 ;;;;(declaim (optimize (debug 3)))
 
 ;;;;;;;;;; initialize-instance ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -36,8 +37,6 @@
 	    ((node-type x) (ntype-name(node-type x)))
 	    ((node-type x)))))
 
-(defmethod print-object :after ((x graph) s) (format s "(~S ~S)" (graph-vertexes x) (graph-ribs x)))
-
 (defmethod print-object :after ((x vertex) s)
 	   (format s "(~S ~S ~S)~%"
 		   (node-name (vertex-node x))
@@ -54,11 +53,18 @@
   	  (vertex-state (rib-end-vertex x))))
 
 (defmethod print-object :after ((x graph) s)
-  (format s "(VC=~S RC=~S~%(" (hash-table-count (graph-vertexes x)) (hash-table-count (graph-ribs x)))
-  (maphash #'(lambda (k v) (format s "~S " v) )(graph-vertexes x))
-  (format s ")~%(" )
-  (maphash #'(lambda (k v) (format s "~S~%" v) )(graph-ribs x))
-  (format s "))"))
+  (format s "(VC=~S RC=~S" (hash-table-count (graph-vertexes x)) (hash-table-count (graph-ribs x)))
+  (if (< 0 (hash-table-count (graph-vertexes x)))
+      (progn
+        (format s ")~%(" )
+	(maphash #'(lambda (k v) (format s "~S " v) )(graph-vertexes x))
+        (format s ")" )))
+  (if (< 0 (hash-table-count (graph-ribs x)))
+      (progn 
+	(format s "~%(" )
+	(maphash #'(lambda (k v) (format s "~S~%" v) )(graph-ribs x))
+	(format s ")")))
+  (format s ")"))
 
 ;;;;;;;;;; graph-add-vertex ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -102,7 +108,7 @@
   (clrhash (graph-ribs g))
   g)
 
-;;;;;;;;;; *find* ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;; graph-find-* ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defmethod graph-find-inlet-vertexes ((g graph))
   (let ((rez-tbl(hash-table-copy(graph-vertexes g))))
@@ -140,7 +146,6 @@
 	     (graph-ribs g))
     rb))
 
-
 (defmethod graph-find-outlet-ribs((g graph) (v vertex))
   (let ((rez-tbl(hash-table-copy(graph-ribs g))))
     (maphash
@@ -150,23 +155,46 @@
      (graph-ribs g))
     rez-tbl))
 
-;;;;;;;;;; switch-time ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;; graph-reorder ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defmethod graph-reorder-vertex((g graph) (v vertex) num &optional (h-table nil))
+  "Выполняет перенумерацию вершин.
+Алоритм подходит для графа не имеющего в своем составе циклов.
+0 Граф Вершина Номер Хеш-таблица_обработанных_вершин_(ХТОВ)
+1 Вершина присутствует в ХТОВ
+1.1 Нет
+1.1.1 Присвоить номер вершине 
+1.1.2 Добавить вершину в ХТОВ
+1.2 Да
+1.2.1 Номер больше номера вершины - присвоить новы номер вершине
+1.2.2 Поместить вершину в ХТОВ
+1.2.3 Найти для вершины исходящие ребра "
+  (let ((ht (if (null h-table) (make-hash-table) h-table))
+	(o-ribs (graph-find-outlet-ribs g v)))
+    (if (null(second(multiple-value-list(gethash v ht))))
+	(progn
+	  (setf (vertex-number v) num)
+	  (setf (gethash v ht) v))
+	(progn
+	  (setf (vertex-number v) (max (vertex-number v) num))))
+    (incf num)
+    (maphash
+     #'(lambda (key val)
+	 (graph-reorder-vertex g (rib-end-vertex key) num ht)
+	 )
+     o-ribs)
+    g))
+
+;;;;;;;;;; to-string ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defmethod to-string (val) (format nil "~A" val))
 
-(defmethod to-string ((x vertex))
-  (format nil "~A:~A" (node-name (vertex-node x)) (vertex-number x)))
+(defmethod to-string ((x vertex)) (format nil "~A:~A" (node-name (vertex-node x)) (vertex-number x)))
+;;;;(defmethod to-string ((x vertex)) (format nil "~A:~A" (node-name (vertex-node x)) (vertex-state x)))
 
 (defmethod to-string ((x rib))
   (format nil "~A->~A" (to-string(rib-start-vertex x)) (to-string(rib-end-vertex x))))
 
-;;;;;;;;;; graph-renumerate-vertex ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(defmethod graph-renumerate-vertex((g graph) (v vertex))
-  (setf (vertex-number v) 0)
-  (do )
-  (graph-find-outlet-ribs g v)
-  )
 
 ;;;;;;;;;; switch-time ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
