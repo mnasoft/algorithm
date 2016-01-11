@@ -52,12 +52,11 @@
     ((4 "WM01") (3 "WH01"))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;WINDOWS;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;(with-open-file (out "d:/home/_namatv/git/clisp/algoritm/dt-gt-hhd.gv" :direction :output :if-exists :supersede :external-format :CP1251) (main *dt-gt-hhd* *dt-gt-hhd-ribs* out))
-;;;;(sb-ext:run-program "d:/home/_namatv/bin/graphviz-2.38/release/bin/dot.exe" "-Tpdf -o d:/home/_namatv/git/clisp/algoritm/dt-gt-hhd.gv.pdf d:/home/_namatv/git/clisp/algoritm/dt-gt-hhd.gv")
-;;;;(sb-ext:run-program "C:\\Program Files\\Adobe\\Reader 11.0\\Reader\\AcroRd32.exe" "d:/home/_namatv/git/clisp/algoritm/dt-gt-hhd.gv.pdf")
+;;;;(make-create *dt-gt-hhd* *dt-gt-hhd-ribs* "d:/home/_namatv/git/clisp/algorithm/dt-gt-hhd.gv" :out-type "pdf" :dpi "150")
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;WINDOWS;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;LINUX;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;(make-create *dt-gt-hhd* *dt-gt-hhd-ribs* "/home/namatv/My/git/clisp/algorithm/dt-gt-hhd.gv" :out-type "png" :dpi "150" :viewer "/usr/bin/okular")
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;LINUX;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+

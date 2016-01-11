@@ -80,11 +80,25 @@
   (rib-list-print ribs out)
   (x-postamble out))
 
-(defun make-create(graph-nodes graph-ribs fname   &key (out-type "pdf") (dpi "150") (viewer "/usr/bin/okular"))
-  (with-open-file (out fname :direction :output :if-exists :supersede )
+(defun make-create(graph-nodes
+		   graph-ribs
+		   fname
+		   &key
+		     (out-type "pdf")
+		     (dpi "150")
+;;;;		     (viewer "/usr/bin/okular")
+;;;;		     (dot-prg "/usr/bin/dot")
+		     (viewer "C:/Program Files/Adobe/Reader 11.0/Reader/AcroRd32.exe")
+		     (dot-prg "D:/home/_namatv/bin/graphviz-2.38/release/bin/dot.exe")
+		     )
+  (with-open-file
+;;;;      (out fname :direction :output :if-exists :supersede )
+      (out fname :direction :output :if-exists :supersede :external-format
+;;;;	   :CP1251)
+	   :UTF8)
     (main graph-nodes graph-ribs out))
   (sb-ext:run-program
-   "/usr/bin/dot"
+   dot-prg
    (list (concatenate 'string "-T" out-type)
 	 (concatenate 'string "-Gdpi=" dpi)
 	 "-o"
@@ -94,4 +108,5 @@
    viewer
    (list
     (concatenate 'string fname "." out-type))))
+
 
