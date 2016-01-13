@@ -86,16 +86,15 @@
 		   &key
 		     (out-type "pdf")
 		     (dpi "150")
-;;;;		     (viewer "/usr/bin/okular")
-;;;;		     (dot-prg "/usr/bin/dot")
-		     (viewer "C:/Program Files/Adobe/Reader 11.0/Reader/AcroRd32.exe")
-		     (dot-prg "D:/home/_namatv/bin/graphviz-2.38/release/bin/dot.exe")
-		     )
-  (with-open-file
+		     (viewer (cond
+			       ((uiop/os:os-windows-p) "C:/Program Files/Adobe/Reader 11.0/Reader/AcroRd32.exe")
+			       ((uiop/os:os-unix-p) "/usr/bin/okular")))
+		     (dot-prg
+		      (cond ((uiop/os:os-windows-p) "D:/home/_namatv/bin/graphviz-2.38/release/bin/dot.exe")
+			    ((uiop/os:os-unix-p) "/usr/bin/dot"))))
+  (with-open-file      
 ;;;;      (out fname :direction :output :if-exists :supersede )
-      (out fname :direction :output :if-exists :supersede :external-format
-;;;;	   :CP1251)
-	   :UTF8)
+      (out fname :direction :output :if-exists :supersede :external-format :UTF8)
     (main graph-nodes graph-ribs out))
   (sb-ext:run-program
    dot-prg
