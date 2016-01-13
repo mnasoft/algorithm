@@ -43,7 +43,8 @@
     ( (2 "FH20")                             ((1 "FA01") (1 "FA02") ))
     ))
 
-;;;;(make-create *gt-dt-hhd* *gt-dt-hhd-ribs* "d:/home/_namatv/git/clisp/algorithm/gt-dt-hhd.gv")
+;;;;
+(make-create *gt-dt-hhd* *gt-dt-hhd-ribs* "gt-dt-hhd")
 
 
 

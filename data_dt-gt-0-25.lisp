@@ -47,7 +47,8 @@
     ( (4 "WM01")                             (3 "WH01"))
     ))
 
-;;;;(make-create *dt-gt-0-25* *dt-gt-0-25-ribs* "d:/home/_namatv/git/clisp/algorithm/dt-gt-0-25.gv")
+;;;;
+(make-create *dt-gt-0-25* *dt-gt-0-25-ribs* "dt-gt-0-25")
 
 
 

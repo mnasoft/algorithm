@@ -91,21 +91,18 @@
 			       ((uiop/os:os-unix-p) "/usr/bin/okular")))
 		     (dot-prg
 		      (cond ((uiop/os:os-windows-p) "D:/home/_namatv/bin/graphviz-2.38/release/bin/dot.exe")
-			    ((uiop/os:os-unix-p) "/usr/bin/dot"))))
-  (with-open-file      
-;;;;      (out fname :direction :output :if-exists :supersede )
-      (out fname :direction :output :if-exists :supersede :external-format :UTF8)
-    (main graph-nodes graph-ribs out))
-  (sb-ext:run-program
-   dot-prg
-   (list (concatenate 'string "-T" out-type)
-	 (concatenate 'string "-Gdpi=" dpi)
-	 "-o"
-	 (concatenate 'string fname "." out-type)
-	 fname))
-  (sb-ext:run-program
-   viewer
-   (list
-    (concatenate 'string fname "." out-type))))
+			    ((uiop/os:os-unix-p) "/usr/bin/dot")))
+		     (fpath
+		      (cond ((uiop/os:os-windows-p) "d:/home/_namatv/git/clisp/algorithm")
+			    ((uiop/os:os-unix-p) "/home/namatv/My/git/clisp/algorithm"))))
+  (with-open-file (out (concatenate 'string fpath "/" fname ".gv") :direction :output :if-exists :supersede :external-format :UTF8) (main graph-nodes graph-ribs out))
+  (sb-ext:run-program dot-prg
+		      (list (concatenate 'string "-T" out-type)
+			    (concatenate 'string "-Gdpi=" dpi)
+			    "-o"
+			    (concatenate 'string fpath "/" fname ".gv" "." out-type)
+			    (concatenate 'string fpath "/" fname ".gv")))
+  (sb-ext:run-program viewer
+		      (list (concatenate 'string fpath "/" fname ".gv" "." out-type))))
 
 

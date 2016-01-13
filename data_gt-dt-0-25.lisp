@@ -46,7 +46,7 @@
 
 
 ;;;;
-(make-create *gt-dt-0-25* *gt-dt-0-25-ribs* "d:/home/_namatv/git/clisp/algorithm/gt-dt-0-25.gv" :out-type "pdf")
+(make-create *gt-dt-0-25* *gt-dt-0-25-ribs* "gt-dt-0-25")
 
 
 

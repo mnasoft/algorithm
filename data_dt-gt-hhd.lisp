@@ -53,4 +53,5 @@
     (((2 "FH29") (2 "FH28"))                 ((3 "КД5") (3 "КД4")))
     ))
 
-;;;;(make-create *dt-gt-hhd* *dt-gt-hhd-ribs* "d:/home/_namatv/git/clisp/algorithm/dt-gt-hhd.gv")
+;;;;
+(make-create *dt-gt-hhd* *dt-gt-hhd-ribs* "dt-gt-hhd")
