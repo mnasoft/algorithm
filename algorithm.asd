@@ -17,7 +17,7 @@
 	       (:file "algorithm-graph-method"
 		      :depends-on ("algorithm-graph-generic"
 				   "algorithm-graph-classes"))
-;;;;	       (:file "testing" :depends-on ("algorithm-graph-method"))
+	       (:file "testing" :depends-on ("algorithm-graph-method"))
 	       ))
 
 

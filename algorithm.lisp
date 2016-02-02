@@ -94,7 +94,8 @@
 			    ((uiop/os:os-unix-p) "/usr/bin/dot")))
 		     (fpath
 		      (cond ((uiop/os:os-windows-p) "d:/home/_namatv/git/clisp/algorithm")
-			    ((uiop/os:os-unix-p) "/home/namatv/My/git/clisp/algorithm"))))
+			    ((uiop/os:os-unix-p) "/home/namatv/My/git/clisp/algorithm")))
+		     (invoke-viewer nil))
   (with-open-file (out (concatenate 'string fpath "/" fname ".gv") :direction :output :if-exists :supersede :external-format :UTF8) (main graph-nodes graph-ribs out))
   (sb-ext:run-program dot-prg
 		      (list (concatenate 'string "-T" out-type)
@@ -102,7 +103,8 @@
 			    "-o"
 			    (concatenate 'string fpath "/" fname ".gv" "." out-type)
 			    (concatenate 'string fpath "/" fname ".gv")))
-  (sb-ext:run-program viewer
-		      (list (concatenate 'string fpath "/" fname ".gv" "." out-type))))
+  (if invoke-viewer
+      (sb-ext:run-program viewer
+			  (list (concatenate 'string fpath "/" fname ".gv" "." out-type)))))
 
 

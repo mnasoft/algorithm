@@ -66,19 +66,15 @@
 	(format s ")")))
   (format s ")"))
 
-;;;;;;;;;; graph-add-vertex ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;; graph-add-* ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defmethod graph-add-vertex ((g graph ) (v vertex)) (setf (gethash v (graph-vertexes g)) v) v)
-
-;;;;;;;;;; graph-add-rib ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defmethod graph-add-rib ((g graph ) (r rib))
   (setf (gethash r (graph-ribs g)) r)
   (setf (gethash (rib-start-vertex r) (graph-vertexes g)) (rib-start-vertex r))
   (setf (gethash (rib-end-vertex r) (graph-vertexes g)) (rib-end-vertex r))
   r)
-
-;;;;;;;;;; graph-add-node ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defmethod graph-add-node ((g graph ) node-name node-state-list)
   (let* (
@@ -91,8 +87,6 @@
 	 (graph-add-rib g (make-instance 'rib :rib-start-vertex v1 :rib-end-vertex v2)))
      (reverse(cdr(reverse vl))) (cdr vl))))
 
-;;;;;;;;;; graph-add-node-list ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
 (defmethod graph-add-node-list((g graph ) node-list)
   (mapc
    #'(lambda (el)
@@ -100,6 +94,24 @@
        )
    node-list)
   )
+
+;;;;;;;;;; graph-remove-* ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defmethod graph-remove-vertex ((g graph ) (v vertex))
+  (let* ((rh (graph-ribs g))
+	 (rl (hash-table-copy rh)))
+    (maphash #'(lambda(key val)
+		 (if (or
+		      (eq (rib-start-vertex key) v)
+		      (eq (rib-end-vertex key)   v))
+		     (remhash key rh)))
+	     rl)
+    (if (remhash v (graph-vertexes g))
+	v)))
+
+(defmethod graph-remove-vertex ((g graph ) (r rib))
+  (if (remhash r (graph-ribs g))
+	r))
 
 ;;;;;;;;;; graph-clear ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -194,6 +206,9 @@
 
 (defmethod to-string ((x rib))
   (format nil "~A->~A" (to-string(rib-start-vertex x)) (to-string(rib-end-vertex x))))
+
+;;;;;;;;;; to-html ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 
 
 ;;;;;;;;;; switch-time ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

@@ -6,3 +6,6 @@
 *.pdf
 *.png
 *.gv
+*.html
+*.svg
+*.dot

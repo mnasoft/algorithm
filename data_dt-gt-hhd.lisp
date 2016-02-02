@@ -54,4 +54,4 @@
     ))
 
 ;;;;
-(make-create *dt-gt-hhd* *dt-gt-hhd-ribs* "dt-gt-hhd")
+

@@ -48,7 +48,6 @@
     ))
 
 ;;;;
-(make-create *dt-gt-0-25* *dt-gt-0-25-ribs* "dt-gt-0-25")
 
 
 
