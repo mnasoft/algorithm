@@ -71,7 +71,7 @@
 
 (defun rib-list-print(ribs &optional (out t)) (mapc #'(lambda (el) (rib-print el out) (format out "~%") )ribs))
 
-(defun main(p ribs &optional (out t))
+(defun main (p ribs &optional (out t))
   (x-preamble out)
   (x-start p out)
   (x-end  p out)
@@ -80,23 +80,55 @@
   (rib-list-print ribs out)
   (x-postamble out))
 
-(defun make-create(graph-nodes
-		   graph-ribs
-		   fname
-		   &key
-		     (out-type "pdf")
-		     (dpi "150")
-		     (viewer (cond
-			       ((uiop/os:os-windows-p) "C:/Program Files/Adobe/Reader 11.0/Reader/AcroRd32.exe")
-			       ((uiop/os:os-unix-p) "/usr/bin/okular")))
-		     (dot-prg
-		      (cond ((uiop/os:os-windows-p) "D:/home/_namatv/bin/graphviz-2.38/release/bin/dot.exe")
-			    ((uiop/os:os-unix-p) "/usr/bin/dot")))
-		     (fpath
-		      (cond ((uiop/os:os-windows-p) "d:/home/_namatv/git/clisp/algorithm")
-			    ((uiop/os:os-unix-p) "/home/namatv/My/git/clisp/algorithm")))
-		     (invoke-viewer nil))
-  (with-open-file (out (concatenate 'string fpath "/" fname ".gv") :direction :output :if-exists :supersede :external-format :UTF8) (main graph-nodes graph-ribs out))
+(defun make-create (graph-nodes
+		    graph-ribs
+		    fname
+		    &key
+		      (out-type "pdf")
+		      (dpi "150")
+		      (viewer (cond
+				((uiop/os:os-windows-p) "C:/Program Files/Adobe/Reader 11.0/Reader/AcroRd32.exe")
+				((uiop/os:os-unix-p) "/usr/bin/okular")))
+		      (dot-prg
+		       (cond ((uiop/os:os-windows-p) "D:/home/_namatv/bin/graphviz-2.38/release/bin/dot.exe")
+			     ((uiop/os:os-unix-p) "/usr/bin/dot")))
+		      (fpath
+		       (cond ((uiop/os:os-windows-p) "d:/home/_namatv/git/clisp/algorithm")
+			     ((uiop/os:os-unix-p) "/home/namatv/quicklisp/local-projects/clisp/algorithm/rezult")))
+		      (invoke-viewer nil))
+  "Предназначена для генерирования симпатичного графа, отображающего алгоритм переходного процесса,
+выраженного в теминах последовательных состояний агрегатов.
+Параметры:
+graph-nodes - список, каждым элементом которого является список,
+              состоящий из обозначения агрегата после которого следуют его состояния;
+graph-ribs  - список каждым элементом которого является список,
+              отражающий зависимости между переключениями агрегатов.
+              Первым элементом является список из номера состояния 
+              и обозначения агрегата к которому приязана возможность 
+              осуществления действия над агрегатами перечисленными во втором сиске;
+fname       - имя файла в который выводится результат;
+Пример использования:
+Имеем три клапана: КЛ1, КЛ2, КЛ3. 
+Каждый клапан может находиться в положении открыто - \"+\" или закрыто - \"-\".
+Первоначально КЛ1 и КЛ2 - открыты, а КЛ3 закрыт.
+Необходимо сначала переложить клапаны КЛ1 и КЛ2 в закрытое положение, а затем открыть КЛ3.
+Код, который будет генерировать соответствующий граф можо записать так:
+(make-create '((\"КЛ1\" \"+\" \"-\" \"-\")
+	       (\"КЛ2\" \"+\" \"-\" \"-\")
+	       (\"КЛ3\" \"-\" \"+\" \"+\"))
+	     '(((1 \"КЛ1\") (1 \"КЛ3\"))
+	       ((1 \"КЛ2\") (1 \"КЛ3\")))
+	     \"sample_01\")
+или так:
+(make-create '((\"КЛ1\" \"+\" \"-\" \"-\")
+	       (\"КЛ2\" \"+\" \"-\" \"-\")
+	       (\"КЛ3\" \"-\" \"+\" \"+\"))
+	     '((((1 \"КЛ1\")(1 \"КЛ2\")) (1 \"КЛ3\")))
+	     \"sample_01\")
+"
+  (with-open-file (out (concatenate 'string fpath "/" fname ".gv")
+		       :direction :output :if-exists :supersede :external-format :UTF8)
+    (main graph-nodes graph-ribs out))
   (sb-ext:run-program dot-prg
 		      (list (concatenate 'string "-T" out-type)
 			    (concatenate 'string "-Gdpi=" dpi)
@@ -106,5 +138,3 @@
   (if invoke-viewer
       (sb-ext:run-program viewer
 			  (list (concatenate 'string fpath "/" fname ".gv" "." out-type)))))
-
-
