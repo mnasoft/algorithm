@@ -3,12 +3,6 @@
 (in-package #:algorithm)
 ;;;;(declaim (optimize (debug 3)))
 
-(make-create *dt-gt-0-25* *dt-gt-0-25-ribs* "dt-gt-0-25")
-(make-create *dt-gt-hhd* *dt-gt-hhd-ribs* "dt-gt-hhd")
-(make-create *gt-dt-0-25* *gt-dt-0-25-ribs* "gt-dt-0-25")
-(make-create *gt-dt-hhd* *gt-dt-hhd-ribs* "gt-dt-hhd")
-
-
 ;;;;(defparameter *dn=10_pn=4_τ=20* (make-instance 'ntype2 :ntype-name "dn=10 pn=4 τ=20" :time-open 20 :time-close 20))
 
 ;;;;(defparameter *dn=20_pn=4_τ=20* (make-instance 'ntype2 :ntype-name "dn=20 pn=4 τ=20" :time-open 20 :time-close 20))
