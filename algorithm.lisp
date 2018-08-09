@@ -1,14 +1,14 @@
 ;;;; algorithm.lisp
 
-(in-package #:algorithm)
+(in-package #:cl-user)
 
 (defpackage #:algorithm
   (:use #:cl #:mnas-hash-table #:mnas-graph)
   (:export make-create))
 
-(in-package #:algorithm)
-
 ;;;;(declaim (optimize (space 0) (compilation-speed 0)  (speed 0) (safety 3) (debug 3)))
+
+(in-package #:algorithm)
 
 (defparameter *node-print-number* nil)
 
@@ -109,10 +109,10 @@
 				((uiop/os:os-windows-p) "C:/Program Files/Adobe/Reader 11.0/Reader/AcroRd32.exe")
 				((uiop/os:os-unix-p) "/usr/bin/atril"))) ;;;;"/usr/bin/okular"
 		      (dot-prg
-		       (cond ((uiop/os:os-windows-p) "D:/home/_namatv/bin/graphviz-2.38/release/bin/dot.exe")
+		       (cond ((uiop/os:os-windows-p) "D:/PRG/msys32/mingw32/bin/dot.exe")
 			     ((uiop/os:os-unix-p) "/usr/bin/dot")))
 		      (fpath
-		       (cond ((uiop/os:os-windows-p) "d:/home/_namatv/git/clisp/algorithm")
+		       (cond ((uiop/os:os-windows-p) "D:/PRG/msys32/home/namatv/quicklisp/local-projects/clisp/algorithm") 
 			     ((uiop/os:os-unix-p) "/home/namatv/quicklisp/local-projects/clisp/algorithm/rezult")))
 		      (invoke-viewer nil))
   "Предназначена для генерирования симпатичного графа, отображающего алгоритм переходного процесса,
@@ -192,7 +192,6 @@ fname       - имя файла в который выводится резул�
 
 ;;;;;;;;;; print-object ;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-
 (defmethod print-object :after ((x ntype) s)
   (format s "~%(~S ~S ~S)" (ntype-name x) (ntype-states x) (ntype-switch-time x)))
 
@@ -209,11 +208,11 @@ fname       - имя файла в который выводится резул�
   (let* (
 	 (nd (make-instance 'node :node-name node-name))
 	 (vl (mapcar #'(lambda (v)
-			 (graph-add-vertex g (make-instance 'vertex :vertex-node nd :vertex-state v)))
+			 (insert-to (make-instance 'vertex :vertex-node nd :vertex-state v) g))
 		     node-state-list)))
     (mapc
      #'(lambda (v1 v2 )
-	 (graph-add-rib g (make-instance 'rib :rib-start-vertex v1 :rib-end-vertex v2)))
+	 (insert-to (make-instance 'rib :rib-start-vertex v1 :rib-end-vertex v2) g))
      (reverse(cdr(reverse vl))) (cdr vl))))
 
 (defmethod graph-add-node-list((g graph ) node-list)
@@ -224,7 +223,8 @@ fname       - имя файла в который выводится резул�
    node-list)
   )
 
-;;;;;;;;;; graph-reorder ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;; graph-reorder ;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defmethod graph-reorder-vertex((g graph) (v vertex) num &optional (h-table nil))
   "Выполняет перенумерацию вершин.
@@ -239,7 +239,7 @@ fname       - имя файла в который выводится резул�
 1.2.2 Поместить вершину в ХТОВ
 1.2.3 Найти для вершины исходящие ребра "
   (let ((ht (if (null h-table) (make-hash-table) h-table))
-	(o-ribs (graph-find-outlet-ribs g v)))
+	(o-ribs (outlet-ribs g v)))
     (if (null(second(multiple-value-list(gethash v ht))))
 	(progn
 	  (setf (vertex-number v) num)
@@ -249,7 +249,7 @@ fname       - имя файла в который выводится резул�
     (incf num)
     (maphash
      #'(lambda (key val)
-	 (graph-reorder-vertex g (rib-end-vertex key) num ht)
+	 (graph-reorder-vertex g (rib-to key) num ht)
 	 )
      o-ribs)
     g))

@@ -6,14 +6,6 @@
   :license "Specify license here"
   :depends-on (#:mnas-hash-table #:mnas-graph)
   :serial t
-  :components ((:file "package")
-	       (:file "algorithm")
-
-	       (:file "algorithm-graph-classes")
-	       (:file "algorithm-graph-generic")
-	       (:file "algorithm-graph-method"
-		      :depends-on ("algorithm-graph-generic"
-				   "algorithm-graph-classes"))
-	       
+  :components ((:file "algorithm")
 ;;;;	       (:file "testing" :depends-on ("algorithm-graph-method"))
 	       ))

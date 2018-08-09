@@ -2,39 +2,9 @@
 
 (in-package #:algorithm)
 
-;;;;(defparameter *dn=10_pn=4_τ=20* (make-instance 'ntype2 :ntype-name "dn=10 pn=4 τ=20" :time-open 20 :time-close 20))
-
-;;;;(defparameter *dn=20_pn=4_τ=20* (make-instance 'ntype2 :ntype-name "dn=20 pn=4 τ=20" :time-open 20 :time-close 20))
-
-;;;;(defparameter *dn=12_pn=4_τ=0.2* (make-instance 'ntype2 :ntype-name "dn=12 pn=4 τ=0.2" :time-open 0.2 :time-close 0.2))
-
-;;;;(defparameter *PH06* (make-instance 'node  :node-name "PH06" :node-type *dn=12_pn=4_τ=0.2*))
-
-;;;;(defparameter *PH06-0* (make-instance 'vertex :vertex-node *PH06* :vertex-state "-"))
-
-;;;;(defparameter *PH06-1* (make-instance 'vertex :vertex-node *PH06* :vertex-state "+"))
-
-;;;;(defparameter *v1* (make-instance 'vertex :v-name "PH06" :v-state "+" :v-type *valve-01* ))
-
-;;;;(defparameter *rib-1* (make-instance 'rib :rib-start-vertex *PH06-0* :rib-end-vertex *PH06-1*))
-
-(progn
-  (defparameter *G* (make-instance 'graph ))
-  (graph-add-node-list *g* *dt-gt-0-25*)
-  (format t "~S" *g*))
-
-(maphash
- #'(lambda(key val)
-     (graph-reorder-vertex *g* key 0)     
-     )
- (graph-find-inlet-vertexes *g*))
-
-(mapcar #'(lambda (el) (format t "~A~%" el))
-	*dt-gt-hhd-ribs*)
-
-(progn (maphash #'(lambda (k v) (format t "~S " (to-string k))) (graph-find-inlet-vertexes *g*))
+(progn (maphash #'(lambda (k v) (format t "~S " (to-string k))) (inlet-vers *g*))
        (format t "~%")
-       (maphash #'(lambda (k v) (format t "~S " (to-string k))) (graph-find-outlet-vertexes *g*)))
+       (maphash #'(lambda (k v) (format t "~S " (to-string k))) (outlet-vers *g*)))
 
 
 
@@ -50,25 +20,25 @@
       ("C" "2" "5")))
   (defparameter *rib-connect*
     '(
-;;;;      ("A:0" "A:1") ("A:1" "A:2") ("A:2" "A:3") ("A:3" "A:4")
       ("A:0" "B:1") ("A:2" "B:3")
-;;;;      ("B:1" "B:3")
       ("A:4" "C:5")
       ("B:1" "C:2")
-;;;;      ("C:2" "C:5")
       ))
   (defparameter *g* (make-instance 'graph ))
   (graph-add-node-list *g* *g-node-list*)
   (mapc #'(lambda (r)
-	    (graph-add-rib
-	     *g*
+	    (insert-to
 	     (make-instance
 	      'rib
-	      :rib-start-vertex (graph-find-vertex-by-name *g* (first r))
-	      :rib-end-vertex (graph-find-vertex-by-name *g* (second r)))))
+	      :from (graph-find-vertex-by-name *g* (first r))
+	      :to (graph-find-vertex-by-name *g* (second r)))
+	     *g*))
 	*rib-connect*))
 
+(mnas-graph:to-string)
 ;;;;(graph-clear *g*)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;(to-graphviz *g* t)
 
 
 (graph-reorder-vertex *g* (graph-find-vertex-by-name *g* "A:0") 10 )
@@ -142,7 +112,3 @@
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-
-
-
