@@ -2,52 +2,9 @@
 
 (in-package #:algorithm)
 
-(progn (maphash #'(lambda (k v) (format t "~S " (to-string k))) (inlet-vers *g*))
-       (format t "~%")
-       (maphash #'(lambda (k v) (format t "~S " (to-string k))) (outlet-vers *g*)))
-
-
-
-(maphash #'(lambda (k v) (format t "~A~%" k))
-	 (algorithm::graph-find-outlet-ribs *g*(graph-find-vertex-by-name *g* "PH06:274")))
-
-(eq (graph-find-vertex-by-name *g* "PH06:274") (graph-find-vertex-by-name *g* "PH06:274"))
-
-(progn
-  (defparameter *g-node-list*
-    '(("A" "0" "1" "2" "3" "4")
-      ("B" "1" "3")
-      ("C" "2" "5")))
-  (defparameter *rib-connect*
-    '(
-      ("A:0" "B:1") ("A:2" "B:3")
-      ("A:4" "C:5")
-      ("B:1" "C:2")
-      ))
-  (defparameter *g* (make-instance 'graph ))
-  (graph-add-node-list *g* *g-node-list*)
-  (mapc #'(lambda (r)
-	    (insert-to
-	     (make-instance
-	      'rib
-	      :from (graph-find-vertex-by-name *g* (first r))
-	      :to (graph-find-vertex-by-name *g* (second r)))
-	     *g*))
-	*rib-connect*))
-
-(mnas-graph:to-string)
-;;;;(graph-clear *g*)
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;(to-graphviz *g* t)
-
-
-(graph-reorder-vertex *g* (graph-find-vertex-by-name *g* "A:0") 10 )
-
-(format t "~S" *g*)
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(algorithm:make-create
+(make-create
  '(("КЛ1" "+" "-"  "-")
    ("КЛ2" "+" "-"  "-")
    ("КЛ3" "-" "-" "+" "+")
@@ -104,11 +61,10 @@
       ( (4 "WH01")                  (3 "КД3"))
       ( (4 "WM01")                  (3 "WH01"))
       ))
-  (algorithm:make-create
+  (make-create
    *dt-gt-0-25*
    *dt-gt-0-25-ribs*
    "dt-gt-0-25"
    :invoke-viewer t))
-
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

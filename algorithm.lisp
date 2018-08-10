@@ -10,13 +10,13 @@
 
 (in-package #:algorithm)
 
-(defparameter *node-print-number* nil)
+(defparameter *noda-print-number* nil)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defgeneric to-string (obj) (:documentation "Прелбразование объекта в строку"))
 
-(defgeneric add-vertex (node-graph) (:documentation "lksjdlfkj"))
+(defgeneric add-vertex (noda-graph) (:documentation "lksjdlfkj"))
 
 (defgeneric insert (part container) (:documentation "Выражает зависимость добавления части в контейнер"))
 
@@ -26,8 +26,8 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defun node-label-print (num name lbl &optional (out t))
-  (if *node-print-number*
+(defun noda-label-print (num name lbl &optional (out t))
+  (if *noda-print-number*
       (format out "\"~A ~A\"[label=\"~A ~A ~A\"] " num name num name lbl)
       (format out "\"~A ~A\"[label=\"~A ~A\"] " num name name lbl)))
 
@@ -38,7 +38,7 @@
     (setq lst (cons el lst))
     (cond
       ((or (= i 0)(= i (- len 1))) )
-      (t  (node-label-print i name el out))))
+      (t  (noda-label-print i name el out))))
   (do*
    ((i 0 (1+ i)) (name (car p)) (dd (cadr p)) (len (length dd)) (el (nth i dd) (nth i dd)) (lst nil))
    ((>= i len) (reverse lst))
@@ -52,7 +52,7 @@
 
 (defun x-start (p &optional (out t) (lbl "S") (label "Начало"))
   (format out "\"~A\"~%~%subgraph cluster_~A{~%  " label label)
-  (mapc #'(lambda (el) (node-label-print lbl (first el) (second el) out)) p)
+  (mapc #'(lambda (el) (noda-label-print lbl (first el) (second el) out)) p)
   (format out "}~%")
   (format out "  \"~A\" -> { " label)
   (mapc #'(lambda (el) (format out "\"~A ~A\" " lbl (first el))) p)
@@ -60,7 +60,7 @@
 
 (defun x-end (p &optional (out t) (lbl "E") (label "Конец"))
   (format out "\"~A\"~%~%subgraph cluster_~A{~%  " label label)
-  (mapc #'(lambda (el) (node-label-print lbl (first el) (first (last el)) out)) p)
+  (mapc #'(lambda (el) (noda-label-print lbl (first el) (first (last el)) out)) p)
   (format out "}~%")
   (format out "  { ")
   (mapc #'(lambda (el) (format out "\"~A ~A\" " lbl (first el))) p)
@@ -73,20 +73,20 @@
 
 (defun rib->rib-list (r) (if (not(listp(car r)))(list r)r))
 
-(defun node-print (n &optional (out t)) (let ((prefix (car n)) (name (cadr n))) (format out "\"~A ~A\" " prefix name)))
+(defun noda-print (n &optional (out t)) (let ((prefix (car n)) (name (cadr n))) (format out "\"~A ~A\" " prefix name)))
 
-(defun node-list-print (nl &optional (out t)) (mapc #'(lambda(el) (node-print el out)) nl))
+(defun noda-list-print (nl &optional (out t)) (mapc #'(lambda(el) (noda-print el out)) nl))
 
-(defun node-list-group-print (nl &optional (out t))
+(defun noda-list-group-print (nl &optional (out t))
   (if (/= (length nl) 1)  (format out "{ "))
-  (node-list-print nl out)
+  (noda-list-print nl out)
   (if (/= (length nl) 1)(format out "} ")))
 
 (defun rib-print(rib &optional (out t))
   (let ((sl (rib->rib-list (first rib))) (el (rib->rib-list (second rib))))
-    (node-list-group-print sl out)
+    (noda-list-group-print sl out)
     (format out "-> ")
-    (node-list-group-print el out)))
+    (noda-list-group-print el out)))
 
 (defun rib-list-print(ribs &optional (out t)) (mapc #'(lambda (el) (rib-print el out) (format out "~%") )ribs))
 
@@ -99,7 +99,7 @@
   (rib-list-print ribs out)
   (x-postamble out))
 
-(defun make-create (graph-nodes
+(defun make-create (graph-nodas
 		    graph-ribs
 		    fname
 		    &key
@@ -118,7 +118,7 @@
   "Предназначена для генерирования симпатичного графа, отображающего алгоритм переходного процесса,
 выраженного в теминах последовательных состояний агрегатов.
 Параметры:
-graph-nodes - список, каждым элементом которого является список,
+graph-nodas - список, каждым элементом которого является список,
               состоящий из обозначения агрегата после которого следуют его состояния;
 graph-ribs  - список каждым элементом которого является список,
               отражающий зависимости между переключениями агрегатов.
@@ -147,7 +147,7 @@ fname       - имя файла в который выводится резул�
 "
   (with-open-file (out (concatenate 'string fpath "/" fname ".gv")
 		       :direction :output :if-exists :supersede :external-format :UTF8)
-    (main graph-nodes graph-ribs out))
+    (main graph-nodas graph-ribs out))
   (sb-ext:run-program dot-prg
 		      (list (concatenate 'string "-T" out-type)
 			    (concatenate 'string "-Gdpi=" dpi)
@@ -169,9 +169,9 @@ fname       - имя файла в который выводится резул�
 (defclass ntype2 (ntype) ()
   (:documentation "Элемент двухпозиционный с  положениями \"+\" (открыто; включено) \"-\" (закрыто; выключено) "))
 
-(defclass node ()
-  ((node-name :accessor node-name :initarg :node-name :initform "" :documentation "Имя")
-   (node-type :accessor node-type :initarg :node-type :initform nil :documentation "Ссылка на тип ntype или его потомков"))
+(defclass noda ()
+  ((noda-name :accessor noda-name :initarg :noda-name :initform "" :documentation "Имя")
+   (noda-type :accessor noda-type :initarg :noda-type :initform nil :documentation "Ссылка на тип ntype или его потомков"))
   (:documentation "Объект, присутствующий в графе состояний.
 Состояния объекта задаются вершинами."))
 
@@ -195,32 +195,32 @@ fname       - имя файла в который выводится резул�
 (defmethod print-object :after ((x ntype) s)
   (format s "~%(~S ~S ~S)" (ntype-name x) (ntype-states x) (ntype-switch-time x)))
 
-(defmethod print-object :after ((x node) s)
+(defmethod print-object :after ((x noda) s)
   (format s "~%(~S ~S)"
-	  (node-name x)
+	  (noda-name x)
 	  (cond
-	    ((node-type x) (ntype-name(node-type x)))
-	    ((node-type x)))))
+	    ((noda-type x) (ntype-name(noda-type x)))
+	    ((noda-type x)))))
 
 ;;;;;;;;;; graph-add-* ;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defmethod graph-add-node ((g graph ) node-name node-state-list)
+(defmethod graph-add-noda ((g graph ) noda-name noda-state-list)
   (let* (
-	 (nd (make-instance 'node :node-name node-name))
+	 (nd (make-instance 'noda :noda-name noda-name))
 	 (vl (mapcar #'(lambda (v)
-			 (insert-to (make-instance 'vertex :vertex-node nd :vertex-state v) g))
-		     node-state-list)))
+			 (insert-to (make-instance 'vertex :vertex-noda nd :vertex-state v) g))
+		     noda-state-list)))
     (mapc
      #'(lambda (v1 v2 )
 	 (insert-to (make-instance 'rib :rib-start-vertex v1 :rib-end-vertex v2) g))
      (reverse(cdr(reverse vl))) (cdr vl))))
 
-(defmethod graph-add-node-list((g graph ) node-list)
+(defmethod graph-add-noda-list((g graph ) noda-list)
   (mapc
    #'(lambda (el)
-       (graph-add-node g (car el) (cdr el))
+       (graph-add-noda g (car el) (cdr el))
        )
-   node-list)
+   noda-list)
   )
 
 ;;;;;;;;;; graph-reorder ;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -256,8 +256,8 @@ fname       - имя файла в который выводится резул�
 
 ;;;;;;;;;; to-string ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;;;;(defmethod to-string ((x vertex)) (format nil "~A:~A" (node-name (vertex-node x)) (vertex-number x)))
-;;;;(defmethod to-string ((x vertex)) (format nil "~A:~A" (node-name (vertex-node x)) (vertex-state x)))
+;;;;(defmethod to-string ((x vertex)) (format nil "~A:~A" (noda-name (vertex-noda x)) (vertex-number x)))
+;;;;(defmethod to-string ((x vertex)) (format nil "~A:~A" (noda-name (vertex-noda x)) (vertex-state x)))
 
 
 ;;;;;;;;;; to-html ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -282,6 +282,6 @@ fname       - имя файла в который выводится резул�
 
 ;;;;;;;;;; copy-class-instance
 
-;;;;(defmethod copy-class-instance ((x node-graph)) (make-instance 'node-graph :name (name x) :vertexes (vertexes x)))
+;;;;(defmethod copy-class-instance ((x noda-graph)) (make-instance 'noda-graph :name (name x) :vertexes (vertexes x)))
 
 ;;;;(defmethod copy-class-instance ((x vertex-type)) (make-instance 'vertex-type :vt-type (vt-type x) :vt-switch-time (vt-switch-time x) :vt-states (vt-states x)))
