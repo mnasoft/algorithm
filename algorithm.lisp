@@ -14,13 +14,13 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defgeneric to-string (obj) (:documentation "Прелбразование объекта в строку"))
+;;;; (defgeneric to-string (obj) (:documentation "Прелбразование объекта в строку"))
 
-(defgeneric add-vertex (noda-graph) (:documentation "lksjdlfkj"))
+;;;; (defgeneric add-vertex (noda-graph) (:documentation "lksjdlfkj"))
 
-(defgeneric insert (part container) (:documentation "Выражает зависимость добавления части в контейнер"))
+;;;; (defgeneric insert (part container) (:documentation "Выражает зависимость добавления части в контейнер"))
 
-(defgeneric copy-class-instance (class-object) (:documentation "Выполняет копирование и экземпляра класса"))
+;;;; (defgeneric copy-class-instance (class-object) (:documentation "Выполняет копирование и экземпляра класса"))
 
 (defgeneric switch-time (obj from-state to-tate) (:documentation "Возвращает время преркладки клапана, крана итп из одного состояния в другое"))
 
@@ -285,3 +285,6 @@ fname       - имя файла в который выводится резул�
 ;;;;(defmethod copy-class-instance ((x noda-graph)) (make-instance 'noda-graph :name (name x) :vertexes (vertexes x)))
 
 ;;;;(defmethod copy-class-instance ((x vertex-type)) (make-instance 'vertex-type :vt-type (vt-type x) :vt-switch-time (vt-switch-time x) :vt-states (vt-states x)))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
