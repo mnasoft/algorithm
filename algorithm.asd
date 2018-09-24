@@ -1,11 +1,12 @@
 ;;;; algorithm.asd
 
-(asdf:defsystem #:algorithm
+(defsystem #:algorithm
   :description "Describe algoritm here"
-  :author "Your Name <your.name@example.com>"
-  :license "Specify license here"
+  :author "Nick Matvyeyev <mnasoft@gmail.com>"
+  :license "GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007 or later"  
   :depends-on (#:mnas-hash-table #:mnas-graph)
-  :serial t
-  :components ((:file "algorithm")
+  :serial nil
+  :components ((:file "package")
+	       (:file "algorithm" :depends-on ("package"))
 ;;;;	       (:file "testing" :depends-on ("algorithm-graph-method"))
 	       ))
