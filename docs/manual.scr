@@ -1,0 +1,74 @@
+@begin(section)
+@title(Overview)
+
+Предназначена для генерирования симпатичного графа,
+отображающего алгоритм переходного процесса,
+выраженного в теминах последовательных состояний агрегатов.
+
+ @b(Пример использования:)
+ Код, приведенный ниже: 
+@begin[lang=lisp](code)
+(make-create
+   '(("КЛ1" "+" "-"  "-")
+     ("КЛ2" "+" "-"  "-")
+     ("КЛ3" "-" "-" "+" "+")
+     ("КЛ4" "-" "-" "+" ))
+   '((((1 "КЛ1")(1 "КЛ2")) (1 "КЛ3"))
+     ((2 "КЛ3") (1 "КЛ4")))
+   "sample_01")
+@end(code)
+даст следующее изображение:
+@image[src=./sample_01.gv.png]()
+
+Здесь:
+@begin(list)
+ @item(@q(КЛ1)...@q(КЛ4) - обозначения клапанов;)
+ @item(@q(+) и @q(-) - состояние клапана открыт или закрыт;)
+ @item(@q(Начало) и @q(Конец) - начальное и конечное состояние клапанов;)
+ @item(сплошные линии со стрелками - переход состояние клапана от состоянния с состоянию;)
+ @item(штриховые линии со стрелками - зависимости. При каком условии может выполняться переходной процесс для определенного клапана.)
+@end(list)
+
+@end(section)
+
+@begin(section)
+@title(Графы)
+@begin(list)
+ @item(call-graph
+
+@image[src=./call-graph.gv.png]())
+ @item(system-graph
+ 
+ @image[src=./system-graph.gv.png]())
+ @item(class-graph
+
+@image[src=./class-graph.gv.png]())
+@end(list)
+@end(section)
+
+
+@begin(section)
+@title(Функции)
+@cl:with-package[name="algorithm"](
+ @cl:doc(function noda-label-print)
+ @cl:doc(function x0)
+ @cl:doc(function x1)
+ @cl:doc(function x-start)
+ @cl:doc(function x-end)
+ @cl:doc(function x-preamble)
+ @cl:doc(function x-postamble)
+ @cl:doc(function rib->rib-list)
+ @cl:doc(function noda-print)
+ @cl:doc(function noda-list-print)
+ @cl:doc(function noda-list-group-print)
+ @cl:doc(function rib-print)
+ @cl:doc(function rib-list-print)
+ @cl:doc(function main)
+ @cl:doc(function make-create))
+@end(section)
+
+@begin(section)
+@title(Переменные)
+@cl:with-package[name="algorithm"](
+ @cl:doc(variable *noda-print-number*))
+@end(section)
