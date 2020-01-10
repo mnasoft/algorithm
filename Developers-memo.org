@@ -1,0 +1,49 @@
+* Операции git [[file:~/org/sbcl/Git-memo.org][Git-memo.org]]
+* Генерирование документации при помощи Codex
+
+ http://commondoc.github.io/codex/docs/tutorial.html
+
+ [[file:~/org/sbcl/codex.org][Codex]]
+
+* Пример генерирования документации
+#+BEGIN_SRC lisp
+  ;;;; (require :codex)
+  ;;;; (require :mnas-package)
+  (let ((pkg   :algorithm)
+	(fpath "/home/namatv/quicklisp/local-projects/clisp/algorithm/docs/build/algorithm/html/"))
+    (codex:document :algorithm)
+    (mnas-package:package-call-graph
+     pkg
+     :out-type "png"
+     :viewer nil
+     :fpath fpath
+     :fname "call-graph")
+    (mnas-package:package-system-graph
+     pkg
+     :out-type "png"
+     :viewer nil
+     :fpath fpath
+     :fname "system-graph")
+    (mnas-package:package-class-graph
+     pkg
+     :out-type "png"
+     :viewer    nil
+     :fpath     fpath
+     :fname     "class-graph"))
+  (algorithm:make-create
+   '(("КЛ1" "+" "-"  "-")
+     ("КЛ2" "+" "-"  "-")
+     ("КЛ3" "-" "-" "+" "+")
+     ("КЛ4" "-" "-" "+" ))
+   '((((1 "КЛ1")(1 "КЛ2")) (1 "КЛ3"))
+     ((2 "КЛ3") (1 "КЛ4")))
+   "sample_01"
+   :out-type "png"
+   :fpath "/home/namatv/quicklisp/local-projects/clisp/algorithm/docs/build/algorithm/html/"
+  )
+#+END_SRC
+
+#+RESULTS:
+: NIL
+
+
