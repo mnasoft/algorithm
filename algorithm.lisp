@@ -1,12 +1,12 @@
 ;;;; algorithm.lisp
 
-(in-package #:cl-user)
+(in-package :cl-user)
 
-(defpackage #:algorithm
+(defpackage :algorithm
   (:use #:cl #:mnas-hash-table #:mnas-graph)
   (:export make-create))
 
-(in-package #:algorithm)
+(in-package :algorithm)
 
 (defparameter *noda-print-number* nil
   "*noda-print-number* !!!!!")

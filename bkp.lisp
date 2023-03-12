@@ -1,6 +1,6 @@
 ;;;; bkp.lisp
 
-(in-package #:algorithm)
+(in-package :algorithm)
 
 
 
